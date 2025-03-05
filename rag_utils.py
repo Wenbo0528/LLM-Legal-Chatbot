@@ -1,7 +1,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from langchain_core.retrievers import BaseRetriever
-from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 import pandas as pd
 import PyPDF2
 import docx
