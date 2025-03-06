@@ -32,10 +32,11 @@ if page == "🏠Home Page":
         "Upload documents, ask questions, and receive intelligent responses instantly!"
     )
 
+
     st.info(
         "Watch app [demo](https://www.youtube.com/watch?v=sGUjmyfof4Q)."
     )
-    
+
     # Introduction
     st.markdown("#### App Functions:")
 
