@@ -24,13 +24,28 @@ with st.sidebar:
 if page == "🏠Home Page":
     # Main Page Title and Description
     st.title("⚖️ LLM Legal Assistant")
+
     st.write(
         "This AI-powered legal assistant is designed to provide support in legal consultations, document drafting, "
         "case and law research, and legal process guidance. By leveraging cutting-edge language models, this tool aims "
         "to enhance efficiency for legal professionals, students, and individuals seeking legal insights. "
         "Upload documents, ask questions, and receive intelligent responses instantly!"
     )
+
+    st.info(
+        "Watch app [demo](https://www.youtube.com/watch?v=sGUjmyfof4Q)."
+    )
     
+    # Introduction
+    st.markdown("#### App Functions:")
+
+    st.markdown("📜 **Legal Consultation** - Get quick legal advice.  ")
+    st.markdown("📝 **Document Drafting** - Generate legal documents.  ")
+    st.markdown("🔍 **Case & Law Search** - Find relevant legal cases.  ")
+    st.markdown("⚖️ **Legal Process Guidance** - Understand legal procedures.")
+    
+
+
     # Model Selection
     model_choice = st.selectbox("Choose a model", ("OpenAI", "DeepSeek"))
     sub_model_choice = st.selectbox("Choose a sub-model", ("gpt-3.5-turbo", "gpt-4", "gpt-4o")) if model_choice == "OpenAI" else st.selectbox("Choose a sub-model", ("R1", "V3"))
