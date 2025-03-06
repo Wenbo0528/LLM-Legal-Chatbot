@@ -48,38 +48,50 @@ class SimpleRetriever(BaseRetriever):
     def get_relevant_documents(self, query: str) -> List[Document]:
         """Retrieve documents containing the query."""
         return [Document(page_content=doc) for doc in self.knowledge_base if query in doc]
-    
-def retrieve_relevant_chunks(query: str, knowledge_base: List[str]) -> List[str]:
-    """Retrieve relevant text chunks based on the query."""
-    retriever = SimpleRetriever(knowledge_base)
-    relevant_docs = retriever.get_relevant_documents(query)
-    return [doc.page_content for doc in relevant_docs]
 
-def generate_response_with_knowledge_base(prompt: str, client, model_choice, sub_model_choice, knowledge_base: List[str]) -> str:
-    """Generate a response using the knowledge base and LLM."""
+# Define simple similarity search for relevant chunks
+def get_similarity_score(query: str, chunk: str) -> float:
+    """Simple keyword-based similarity scoring"""
+    # Convert to lowercase for case-insensitive matching
+    query_words = set(query.lower().split())
+    chunk_words = set(chunk.lower().split())
+        
+    # Calculate intersection of words
+    common_words = query_words.intersection(chunk_words)
+        
+    # Calculate similarity score - can be enhanced with better algorithms
+    if len(query_words) == 0:
+        return 0
+    return len(common_words) / len(query_words)
 
-    relevant_chunks = retrieve_relevant_chunks(prompt, knowledge_base)
-    context = " ".join(relevant_chunks)
+def generate_response_with_knowledge_base(query: str, api_key: str, model_choice: str, sub_model_choice: str, knowledge_base: List[str]) -> str:
     
-    if model_choice == "OpenAI":
-        response = client.chat.completions.create(
-            model=sub_model_choice,
-            messages=[
-                {"role": "system", "content": context},
-                {"role": "user", "content": prompt}
-            ],
-            stream=False,
-        )
-        response_content = response['choices'][0]['message']['content']
-    elif model_choice == "DeepSeek":
-        response = client.generate_response(
-            model=sub_model_choice,
-            messages=[
-                {"role": "system", "content": context},
-                {"role": "user", "content": prompt}
-            ],
-            stream=False,
-        )
-        response_content = response
     
-    return response_content
+    
+    # Find relevant chunks based on similarity
+    relevant_chunks = []
+    for chunk in knowledge_base:
+        score = get_similarity_score(query, chunk)
+        if score > 0.1:  # Threshold for relevance
+            relevant_chunks.append((chunk, score))
+    
+    # Sort chunks by relevance score in descending order
+    relevant_chunks.sort(key=lambda x: x[1], reverse=True)
+    
+    # Take top 3 most relevant chunks (or fewer if less available)
+    top_chunks = [chunk for chunk, _ in relevant_chunks[:3]]
+    
+    # Prepare system prompt with relevant context
+    if top_chunks:
+        context = "\n\n".join(top_chunks)
+        system_prompt = f"""You are a helpful assistant. Answer the user's question based on the following information:
+
+CONTEXT:
+{context}
+
+If the question cannot be answered using the information provided, acknowledge that you don't have enough information rather than making up an answer. Use the context information to provide accurate and helpful responses."""
+    else:
+        # If no relevant context found
+        system_prompt = "You are a helpful assistant. Answer the user's question based on your knowledge. If you don't know the answer, please acknowledge that."
+    
+    return system_prompt
