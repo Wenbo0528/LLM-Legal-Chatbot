@@ -1,8 +1,9 @@
 # 💬 LLM-Legal-ChatBot
 
-A simple Streamlit application demonstrating how to build a chatbot using OpenAI's GPT-3.5.
+A simple Streamlit application demonstrating how to build a chatbot using LLM like Deepseek or GPT.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-bw4vgsoyviyz5era9exlfn.streamlit.app/)
+![image](https://github.com/user-attachments/assets/5fe85655-0b56-4b0d-ad76-b2b7c1816776)
 
 ## How to Run Locally
 
